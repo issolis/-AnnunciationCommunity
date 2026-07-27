@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS event_role CASCADE;
+DROP TABLE IF EXISTS list CASCADE;
 DROP TABLE IF EXISTS user_event CASCADE;
 DROP TABLE IF EXISTS charisma_applicant_data CASCADE;
 DROP TABLE IF EXISTS event CASCADE;
@@ -42,6 +43,7 @@ CREATE TABLE "user" (
     dob DATE NOT NULL,
     phone VARCHAR(100),
     email VARCHAR(150) UNIQUE,
+    access_level INTEGER,
     headquarter_uuid UUID NOT NULL REFERENCES headquarter(uuid),
     council_role_uuid UUID UNIQUE REFERENCES council_role(uuid)
 );
@@ -67,14 +69,22 @@ CREATE TABLE event (
     date_start DATE NOT NULL,
     date_end DATE,
     headquarter_uuid UUID NOT NULL REFERENCES headquarter(uuid),
-    event_type_uuid UUID NOT NULL REFERENCES event_type(uuid),
-    applicant_meeting BOOLEAN NOT NULL DEFAULT FALSE
+    event_type_uuid UUID NOT NULL REFERENCES event_type(uuid)
 );
 
 CREATE TABLE charisma_applicant_data (
     charisma_uuid UUID NOT NULL REFERENCES charisma(uuid),
     applicant_data_uuid UUID NOT NULL REFERENCES applicant_data(uuid),
     PRIMARY KEY (charisma_uuid, applicant_data_uuid)
+);
+
+CREATE TABLE list (
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_uuid UUID NOT NULL REFERENCES "user"(uuid),
+    event_uuid UUID NOT NULL REFERENCES event(uuid),
+    day DATE NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    UNIQUE (user_uuid, event_uuid, day)
 );
 
 CREATE TABLE event_role (
