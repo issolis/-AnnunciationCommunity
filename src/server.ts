@@ -1,5 +1,7 @@
 import express from "express";
 import { headquarterRouter } from "./modules/headquearter/presentation/headquarter.routes.js";
+import { councilRoleRouter } from "./modules/council-role/council-role/presentation/council-role.routes.js";
+
 
 const app = express();
 
@@ -11,6 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.use("/headquarter", headquarterRouter);
+app.use("/council-role", councilRoleRouter);
 
 const PORT = process.env.PORT || 3000;
 
