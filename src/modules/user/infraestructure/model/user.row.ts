@@ -7,6 +7,7 @@ export interface UserRow {
     dob: string;
     phone: string | null;
     email: string | null;
+    password_hash: string | null;
     access_level: number | null;
     headquarter_uuid: string;
     council_role_uuid: string | null;
