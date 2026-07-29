@@ -1,8 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../../shared/error/app.error.js";
+import type { AuthenticatedRequest } from "../../shared/middlewares/auth.middleware.js";
 import { FindAllUserUseCase } from "../application/find-all-user.js";
 import { FindUserByUuidUseCase } from "../application/find-user-by-uuid.js";
 import { CreateUserUseCase } from "../application/create-user.js";
+
 
 export class UserController {
     constructor(
@@ -24,6 +26,20 @@ export class UserController {
         try {
             const { uuid } = req.params as { uuid: string };
             const user = await this.findUserByUuidUseCase.execute(uuid);
+
+            if (!user) throw new AppError("User not found", 404);
+
+            res.status(200).json({ success: true, data: user });
+        } catch (error) {
+            this.handleError(error, res);
+        }
+    }
+
+    async findMe(req: AuthenticatedRequest, res: Response, _next: NextFunction): Promise<void> {
+        try {
+            if (!req.user) throw new AppError("Unauthorized", 401);
+
+            const user = await this.findUserByUuidUseCase.execute(req.user.uuid);
 
             if (!user) throw new AppError("User not found", 404);
 

@@ -5,6 +5,7 @@ import { UserRepositoryImpl } from "../infraestructure/repository/user.repositor
 import { FindAllUserUseCase } from "../application/find-all-user.js";
 import { FindUserByUuidUseCase } from "../application/find-user-by-uuid.js";
 import { CreateUserUseCase } from "../application/create-user.js";
+import { authMiddleware } from "../../shared/middlewares/auth.middleware.js";
 
 const userRepository = new UserRepositoryImpl();
 
@@ -18,6 +19,9 @@ const validator = new UserValidator();
 
 export const userRouter = Router();
 
+userRouter.use(authMiddleware);
+
 userRouter.get("/", controller.findAll.bind(controller));
+userRouter.get("/me", controller.findMe.bind(controller));
 userRouter.get("/:uuid", validator.validateUuidParam.bind(validator), controller.findByUuid.bind(controller));
 userRouter.post("/", validator.validateCreate.bind(validator), controller.create.bind(controller));

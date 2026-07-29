@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { AppError } from "../../shared/error/app.error.js";
 import { jwtSecret } from "../../shared/config/jwt.js";
 import type { UserRepository } from "../../user/infraestructure/repository/user.repository.interface.js";
-import type { UserModel } from "../../user/infraestructure/model/user.model.js";
 
 interface LoginInput {
     email: string;

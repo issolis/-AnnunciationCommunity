@@ -1,9 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { AppError } from "../../shared/error/app.error.js";
+import { AppError } from "../error/app.error.js";
+import { jwtSecret } from "../config/jwt.js";
+import type { UserModel } from "../../user/infraestructure/model/user.model.js";
+
 
 export interface AuthenticatedRequest extends Request {
-    userUuid?: string;
+    user?: UserModel;
 }
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
@@ -13,12 +16,9 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
         if (!header || !header.startsWith("Bearer ")) throw new AppError("Missing or invalid authorization header", 401);
 
         const token = header.slice("Bearer ".length);
-        const secret = process.env.JWT_SECRET_KEY;
+        const payload = jwt.verify(token, jwtSecret) as UserModel;
 
-        if (!secret) throw new AppError("JWT secret is not configured", 500);
-
-        const payload = jwt.verify(token, secret) as { uuid: string };
-        req.userUuid = payload.uuid;
+        req.user = payload;
 
         next();
     } catch (error) {
