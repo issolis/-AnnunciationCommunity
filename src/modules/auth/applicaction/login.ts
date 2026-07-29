@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../shared/error/app.error.js";
+import { jwtSecret } from "../../shared/config/jwt.js";
 import type { UserRepository } from "../../user/infraestructure/repository/user.repository.interface.js";
 import type { UserModel } from "../../user/infraestructure/model/user.model.js";
 
@@ -27,15 +28,11 @@ export class LoginUseCase {
 
         if (!isValid) throw new AppError("Invalid credentials", 401);
 
-        const secret = process.env.JWT_SECRET_KEY;
-
-        if (!secret) throw new AppError("JWT secret is not configured", 500);
-
-        const token = jwt.sign({ uuid: row.uuid }, secret, { expiresIn: "1d" });
-
         const user = await this.userRepository.findByUuid(row.uuid);
 
         if (!user) throw new AppError("User not found", 404);
+
+        const token = jwt.sign(user, jwtSecret, { expiresIn: "1d" });
 
         return { token };
     }

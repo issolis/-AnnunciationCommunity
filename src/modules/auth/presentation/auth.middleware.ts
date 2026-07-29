@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { AppError } from "../../../shared/error/app.error.js";
+import { AppError } from "../../shared/error/app.error.js";
 
 export interface AuthenticatedRequest extends Request {
     userUuid?: string;
